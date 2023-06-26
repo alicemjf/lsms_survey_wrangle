@@ -1,0 +1,13 @@
+country,raw_name,sans_ext,module,orig_col,new_col,order
+tza,upd4_hh_a.dta,upd4_hh_a,hh_identification,r_hhid,hhid,1
+tza,HH_SEC_A.dta,HH_SEC_A,hh_identification,sdd_hhid,hhid,1
+tza,upd4_hh_a.dta,upd4_hh_a,hh_identification,round,round,2
+tza,HH_SEC_A.dta,HH_SEC_A,hh_identification,sdd_rural,urb_rur,3
+tza,upd4_hh_a.dta,upd4_hh_a,hh_identification,urb_rur,urb_rur,3
+tza,upd4_hh_b.dta,upd4_hh_b,member_roster,hb_05,relation_head,4
+tza,HH_SEC_B.dta,HH_SEC_B,member_roster,hh_b05,relation_head,4
+tza,upd4_hh_i1.dta,upd4_hh_i1,housing,hi_21_1,cooking_fuel_prm,5
+tza,HH_SEC_I.dta,HH_SEC_I,housing,hh_i16,cooking_fuel_prm,5
+tza,upd4_hh_i1.dta,upd4_hh_i1,housing,hi_21_2,cooking_fuel_scnd,6
+tza,upd4_hh_i1.dta,upd4_hh_i1,housing,hi_22,light_fuel_prm,7
+tza,HH_SEC_I.dta,HH_SEC_I,housing,hh_i17,light_fuel_prm,7

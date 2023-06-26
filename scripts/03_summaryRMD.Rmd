@@ -1,0 +1,192 @@
+---
+title: "summary"
+author: "Alice Farrelly"
+date: "28/03/2023"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
+
+```
+
+```{r}
+print(Sys.time())
+```
+
+
+
+```{r, include= FALSE, }
+hh_all_cntry <- read.csv('././outputs/cleaned_data/1_hh_all_cntry_xsec.csv')
+hh_all_cntry_panels <- read.csv('././outputs/cleaned_data/2_hh_all_cntry_panels.csv')
+indiv_all_cntry <- read.csv('././outputs/cleaned_data/3_indiv_all_cntry_xsec.csv')
+indiv_all_cntry_panels <- read.csv('././outputs/cleaned_data/4_indiv_all_cntry_panels.csv')
+hh_summary <- read.csv('././outputs/cleaned_data/5_hh_summary_xsec.csv')
+hh_summary_panels <- read.csv('././outputs/cleaned_data/6_hh_summary_panels.csv')
+```
+
+# Overview: number of rural households per country per year
+
+### In cross-sectional data
+```{r}
+# how many rural hh per country per year
+
+rur <- hh_all_cntry %>% filter(relbl_urb_rur == "RURAL")
+table(rur$country, rur$year)
+
+```
+
+### Rural households in full panels
+
+```{r}
+
+full_p_rur <- hh_all_cntry_panels %>%
+  filter(bp == 1) %>%
+  filter(relbl_urb_rur == "RURAL")
+
+table(full_p_rur$country, full_p_rur$year)
+```
+
+NER 2018 and ETH 2018 have no households in the panel data set as these are new panels - they are only usable as cross-sectional data. 
+
+# Overview of primary cooking fuel shares for rural households, per country, per year
+
+```{r}
+shares <- hh_all_cntry %>%
+  filter(relbl_urb_rur == "RURAL") %>%
+  group_by(country, year, cooking_fuel_prm_grp) %>% 
+  count() %>% # add count of fuel per country per year
+  ungroup() %>% 
+  group_by(country, year) %>% 
+  mutate(ttl = sum(n),# count per year
+         pct_ttl = (n / ttl)*100)  # calculate prop of hh using fuel in country per year
+
+print(shares, n = length(shares$country))
+```
+
+# Overview of primary cooking fuel shares for rural households, per country, per region, per year
+
+```{r}
+shares_rgn <- hh_all_cntry %>%
+  filter(relbl_urb_rur == "RURAL") %>%
+  group_by(country, relbl_region, year, cooking_fuel_prm_grp) %>% 
+  count() %>% # add count of fuel per country per year
+  ungroup() %>% 
+  group_by(country, relbl_region, year) %>% 
+  mutate(ttl = sum(n),# count per year
+         pct_ttl = (n / ttl)*100)  # calculate prop of hh using fuel in country per year
+
+print(shares_rgn, n = length(shares_rgn$country))
+```
+
+# Balanced panel of original households:Overview of primary cooking fuel shares for rural households, per country, per year
+
+```{r}
+shares <- hh_all_cntry_panels %>%
+  filter(relbl_urb_rur == "RURAL", bp == 1, orig_hh == 1) %>%
+  group_by(country, year, cooking_fuel_prm_grp) %>% 
+  count() %>% # add count of fuel per country per year
+  ungroup() %>% 
+  group_by(country, year) %>% 
+  mutate(ttl = sum(n),# count per year
+         pct_ttl = (n / ttl)*100)  # calculate prop of hh using fuel in country per year
+
+print(shares, n = length(shares$country))
+```
+
+
+# Balanced panel of original households: Overview of primary cooking fuel shares for rural households, per country, per region, per year
+
+```{r}
+shares_rgn <- hh_all_cntry_panels %>%
+  filter(relbl_urb_rur == "RURAL", bp == 1, orig_hh == 1) %>%
+  group_by(country, relbl_region, year, cooking_fuel_prm_grp) %>% 
+  count() %>% # add count of fuel per country per year
+  ungroup() %>% 
+  group_by(country, relbl_region, year) %>% 
+  mutate(ttl = sum(n),# count per year
+         pct_ttl = (n / ttl)*100)  # calculate prop of hh using fuel in country per year
+
+print(shares_rgn, n = length(shares_rgn$country))
+```
+
+
+
+```{r, include = FALSE, echo=FALSE}
+# create vector of unique variable names in all dfs of interest
+library(dplyr)
+all_vars <- unique(c(names(hh_all_cntry), names(hh_all_cntry_panels), names(hh_summary), names(hh_summary_panels), names(indiv_all_cntry), names(indiv_all_cntry_panels)))
+#write.csv(all_vars, './lookup/tmp/vars.csv', row.names = FALSE)
+
+# read in edited csv which includes flag for variable type
+var_classes <- read.csv('././lookup/vars2.csv')
+
+# For each of the dfs of interest, change character class based on the class column of var_classes$class column #######
+# code solution to do this from here: https://stackoverflow.com/questions/65541605/writing-a-custom-function-to-convert-class-of-variables-in-a-dataframe-based-on
+hh_all_cntry <- hh_all_cntry %>% 
+  mutate(across(any_of(var_classes$var_name), 
+                ~get(paste0("as.",var_classes[var_classes$var_name == cur_column(),"class"]))(.x)))
+
+hh_all_cntry_panels <- hh_all_cntry_panels %>% 
+  mutate(across(any_of(var_classes$var_name), 
+                ~get(paste0("as.",var_classes[var_classes$var_name == cur_column(),"class"]))(.x)))
+
+
+hh_summary <- hh_summary %>% 
+  mutate(across(any_of(var_classes$var_name), 
+                ~get(paste0("as.",var_classes[var_classes$var_name == cur_column(),"class"]))(.x)))
+
+hh_summary_panels <- hh_summary_panels %>% 
+  mutate(across(any_of(var_classes$var_name), 
+                ~get(paste0("as.",var_classes[var_classes$var_name == cur_column(),"class"]))(.x)))
+
+indiv_all_cntry <- indiv_all_cntry %>% 
+  mutate(across(any_of(var_classes$var_name), 
+                ~get(paste0("as.",var_classes[var_classes$var_name == cur_column(),"class"]))(.x)))
+
+
+indiv_all_cntry_panels <- indiv_all_cntry_panels %>% 
+  mutate(across(any_of(var_classes$var_name), 
+                ~get(paste0("as.",var_classes[var_classes$var_name == cur_column(),"class"]))(.x)))
+
+
+```
+
+# Household df summary by country
+
+```{r}
+countries <- unique(hh_all_cntry$country)
+S <- list()
+for (country in countries){
+  S[[country]] <- (summary(hh_all_cntry[hh_all_cntry$country == country,]))
+}
+print(S)
+
+```
+
+# Houselohd summarized df by country
+## data that has been summarized from inidivdual level observations
+
+```{r}
+S <- list()
+for (country in countries){
+  #tmp <- hh_all_cntry[hh_all_cntry$country == country,]
+  S[[country]] <- (summary(hh_summary[hh_summary$country == country,]))
+}
+print(S)
+
+```
+
+
+# Individual df summary by country
+```{r}
+S <- list()
+for (country in countries){
+  #tmp <- hh_all_cntry[hh_all_cntry$country == country,]
+  S[[country]] <- (summary(indiv_all_cntry[indiv_all_cntry$country == country,]))
+}
+print(S)
+
+```
+

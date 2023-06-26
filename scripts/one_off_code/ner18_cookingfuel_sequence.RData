@@ -1,0 +1,28 @@
+# This code takes the NER 2018 cooking fuel data and transposes them to long format
+# Doing as a one off piece of code as no other survey requires this processing, so it is not worth including this step in a funciton
+# A .dta file will be output, to be used in the read, clean, summarize format
+
+ner18_housing <- read_dta('./data_raw/NER/ner18s11_me_ner2018.dta') #read in housing file
+
+ner18_housing_t <- ner18_housing %>% 
+  dplyr::select(grappe, menage, s11q53__1, s11q53__2, s11q53__3, s11q53__4, s11q53__5, s11q53__6, s11q53__7, s11q53__8) %>% # select relevant cols
+  mutate(hhid = paste0(grappe, menage)) %>% # create hhid
+  mutate(collected_wood = s11q53__1,  # rename cols
+         purchased_wood = s11q53__2, 
+         charcoal = s11q53__3, 
+         gas = s11q53__4, 
+         electricity = s11q53__5, 
+         petroleum_oil = s11q53__6, 
+         animal_waste = s11q53__7, 
+         other = s11q53__8) %>%
+  dplyr::select(- c(grappe, menage, s11q53__1, s11q53__2, s11q53__3, s11q53__4, s11q53__5, s11q53__6, s11q53__7, s11q53__8))
+
+ner18_housing_l <- ner18_housing_t %>% 
+  pivot_longer(                            # pivot rows to columns
+    !hhid                          ## use all columns except hhid
+  ) %>%
+  filter(value == 1) %>% # filter for 1 - this means it is the primary fuel
+  mutate(prm_cooking_fuel = name) %>%
+  dplyr::select(-c(name, value))
+
+write_dta(ner18_housing_l, './data_raw/NER/ner18_fuel_long.dta')

@@ -1,0 +1,9 @@
+country,raw_name,sans_ext,module,orig_col,new_col,data_level
+tza,SEC_A_T.dta,SEC_A_T,hh_overview,hhid,af_hhid,hh
+tza,SEC_A_T.dta,SEC_A_T,hh_overview,rural,urb_rur,hh
+tza,HH.Geovariables_Y1.dta,HH.Geovariables_Y1,geovars_r1,dist01,dist_road,hh
+tza,HH.Geovariables_Y1.dta,HH.Geovariables_Y1,geovars_r1,dist02,dist_popcenter,hh
+tza,HH.Geovariables_Y1.dta,HH.Geovariables_Y1,geovars_r1,dist03,dist_agmrkt,hh
+tza,SEC_H1_J_K2_O2_P1_Q1_S1.dta,SEC_H1_J_K2_O2_P1_Q1_S1,housing,sjq17_1,cooking_fuel_prm,hh
+tza,SEC_B_C_D_E1_F_G1_U.dta,SEC_B_C_D_E1_F_G1_U,member_roster,sbq5,relation_head,indiv
+tza,SEC_B_C_D_E1_F_G1_U.dta,SEC_B_C_D_E1_F_G1_U,member_roster,sbq2,sex,indiv

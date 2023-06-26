@@ -1,0 +1,4 @@
+Scripts saved in the one_off_code folder were only used once, and are not used in the usual read, clean, summarize, analyse sequence.
+
+The panel_id_sequence was used to sequence panel ids for households, the output of which is saved in lookups.
+The output table look up table is used in the read, clean, summarize, analyse seuqnece; but the orinal panel_id_sequence code is not used.
